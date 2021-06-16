@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">ToDoApp</string>
+
+    <string name="add_btn">Add</string>
+    <string name="delete_btn">Delete</string>
+    <string name="save_btn">Save</string>
+    <string name="description_edit_text_hint">Description</string>
+    <string name="to_date_edit_text_hint">To date</string>
+
+    <string name="delete_alert_message">Are you sure?</string>
+    <string name="delete_project_alert_title">Delete project</string>
+    <string name="delete_task_alert_title">Delete task</string>
+    <string name="alert_positive_btn">OK</string>
+    <string name="alert_negative_btn">Cancel</string>
+
+    <string name="status_completed_btn">Completed</string>
+    <string name="status_uncompleted_btn">Uncompleted</string>
+</resources>
