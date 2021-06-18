@@ -15,7 +15,7 @@
             android:id="@+id/itemDescriptionTextView"
             android:layout_width="match_parent"
             android:layout_height="25dp"
-            android:layout_marginLeft="20dp"
+            android:layout_marginStart="20dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:textColor="@color/black" />
 
@@ -36,6 +36,7 @@
         android:layout_width="match_parent"
         android:layout_height="15dp"
         android:layout_gravity="center"
-        android:layout_weight="90" />
+        android:layout_weight="90"
+        android:contentDescription="@string/completed_image" />
 
 </LinearLayout>

@@ -15,4 +15,7 @@
 
     <string name="status_completed_btn">Completed</string>
     <string name="status_uncompleted_btn">Uncompleted</string>
+
+    <string name="completed_image">Completed</string>
+
 </resources>

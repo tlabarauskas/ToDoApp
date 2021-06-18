@@ -14,14 +14,15 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.example.todoapp.Objects.Project;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class ProjectActivity extends AppCompatActivity {
 
@@ -29,6 +30,7 @@ public class ProjectActivity extends AppCompatActivity {
     private static final String TO_DATE_KEY = "toDate";
     private static final String COMPLETED_KEY = "completed";
     private static final String PROJECTS_COLLECTION_KEY = "projects";
+    private static final String TASKS_COLLECTION_KEY = "tasks";
     private static final String PROJECT_EXTRA_KEY = "projectExtra";
     private static final String TAG = "projectActivityLogTag";
 
@@ -110,10 +112,12 @@ public class ProjectActivity extends AppCompatActivity {
                 project.put(TO_DATE_KEY, toDate);
                 project.put(COMPLETED_KEY, projectCompleted);
 
+                //updating existing project
                 if (getIntent().hasExtra(PROJECT_EXTRA_KEY)) {
                     db.collection(PROJECTS_COLLECTION_KEY).document(projectExtra.getId())
                             .update(project);
-                } else {
+                } //creating new project
+                else {
                     db.collection(PROJECTS_COLLECTION_KEY)
                             .add(project)
                             .addOnSuccessListener(documentReference -> Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId()))
@@ -145,15 +149,13 @@ public class ProjectActivity extends AppCompatActivity {
                     db.collection(PROJECTS_COLLECTION_KEY).document(projectExtra.getId())
                             .delete()
                             .addOnSuccessListener(aVoid -> {
-                                Log.d(TAG, "DocumentSnapshot successfully deleted!");
+                                deleteProjectTasks();
+                                Log.d(TAG, "Project document successfully deleted!");
                                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                 startActivity(intent);
                             })
-                            .addOnFailureListener(e -> {
-                                Toast.makeText(getApplicationContext(), "Error deleting project", Toast.LENGTH_SHORT).show();
-                                Log.w(TAG, "Error deleting document", e);
-                            });
+                            .addOnFailureListener(e -> Log.w(TAG, "Error deleting project document", e));
                 }
             });
             builder.setNegativeButton(R.string.alert_negative_btn, (dialog, id) -> {
@@ -174,6 +176,18 @@ public class ProjectActivity extends AppCompatActivity {
     }
 
     private void deleteProjectTasks() {
+        db.collection(PROJECTS_COLLECTION_KEY).document(projectExtra.getId()).collection(TASKS_COLLECTION_KEY)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
+                            db.collection(PROJECTS_COLLECTION_KEY).document(projectExtra.getId()).collection(TASKS_COLLECTION_KEY).document(document.getId()).delete();
 
+                            Log.d(TAG, "Document from tasks collection successfully deleted!");
+                        }
+                    } else {
+                        Log.w(TAG, "Error deleting task document.", task.getException());
+                    }
+                });
     }
 }

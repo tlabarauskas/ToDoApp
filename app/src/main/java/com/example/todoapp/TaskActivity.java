@@ -15,7 +15,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.todoapp.Objects.Project;
 import com.example.todoapp.Objects.ProjectTask;
@@ -30,7 +29,7 @@ public class TaskActivity extends AppCompatActivity {
     private static final String DESCRIPTION_KEY = "description";
     private static final String TO_DATE_KEY = "toDate";
     private static final String COMPLETED_KEY = "completed";
-    private static final String PROJECT_KEY = "project";
+    private static final String PROJECTS_COLLECTION_KEY = "projects";
     private static final String TASKS_COLLECTION_KEY = "tasks";
     private static final String PROJECT_EXTRA_KEY = "projectExtra";
     private static final String TASK_EXTRA_KEY = "taskExtra";
@@ -121,15 +120,13 @@ public class TaskActivity extends AppCompatActivity {
                 Map<String, Object> projectTask = new HashMap<>();
                 projectTask.put(DESCRIPTION_KEY, description);
                 projectTask.put(TO_DATE_KEY, toDate);
-                projectTask.put(PROJECT_KEY, projectExtra.getId());
                 projectTask.put(COMPLETED_KEY, taskCompleted);
 
                 if (getIntent().hasExtra(PROJECT_EXTRA_KEY) && getIntent().hasExtra(TASK_EXTRA_KEY)) {
-                    db.collection(TASKS_COLLECTION_KEY).document(projectTaskExtra.getId())
+                    db.collection(PROJECTS_COLLECTION_KEY).document(projectExtra.getId()).collection(TASKS_COLLECTION_KEY).document(projectTaskExtra.getId())
                             .update(projectTask);
-                }
-                else if (getIntent().hasExtra(PROJECT_EXTRA_KEY)) {
-                    db.collection(TASKS_COLLECTION_KEY)
+                } else if (getIntent().hasExtra(PROJECT_EXTRA_KEY)) {
+                    db.collection(PROJECTS_COLLECTION_KEY).document(projectExtra.getId()).collection(TASKS_COLLECTION_KEY)
                             .add(projectTask)
                             .addOnSuccessListener(documentReference -> Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId()))
                             .addOnFailureListener(e -> Log.w(TAG, "Error adding document", e));
@@ -157,19 +154,16 @@ public class TaskActivity extends AppCompatActivity {
 
             builder.setPositiveButton(R.string.alert_positive_btn, (dialog, id) -> {
                 if (getIntent().hasExtra(TASK_EXTRA_KEY)) {
-                    db.collection(TASKS_COLLECTION_KEY).document(projectTaskExtra.getId())
+                    db.collection(PROJECTS_COLLECTION_KEY).document(projectExtra.getId()).collection(TASKS_COLLECTION_KEY).document(projectTaskExtra.getId())
                             .delete()
                             .addOnSuccessListener(aVoid -> {
-                                Log.d(TAG, "DocumentSnapshot successfully deleted!");
+                                Log.d(TAG, "Task document successfully deleted!");
                                 Intent intent = new Intent(getApplicationContext(), TasksActivity.class);
                                 intent.putExtra(PROJECT_EXTRA_KEY, projectExtra);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                 startActivity(intent);
                             })
-                            .addOnFailureListener(e -> {
-                                Toast.makeText(getApplicationContext(), "Error deleting project", Toast.LENGTH_SHORT).show();
-                                Log.w(TAG, "Error deleting document", e);
-                            });
+                            .addOnFailureListener(e -> Log.w(TAG, "Error deleting task", e));
                 }
             });
             builder.setNegativeButton(R.string.alert_negative_btn, (dialog, id) -> {

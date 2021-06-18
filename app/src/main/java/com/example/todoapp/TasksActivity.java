@@ -23,7 +23,7 @@ public class TasksActivity extends AppCompatActivity {
     private static final String DESCRIPTION_KEY = "description";
     private static final String TO_DATE_KEY = "toDate";
     private static final String COMPLETED_KEY = "completed";
-    private static final String PROJECT_KEY = "project";
+    private static final String PROJECTS_COLLECTION_KEY = "projects";
     private static final String TASKS_COLLECTION_KEY = "tasks";
     private static final String PROJECT_EXTRA_KEY = "projectExtra";
     private static final String TASK_EXTRA_KEY = "taskExtra";
@@ -69,8 +69,7 @@ public class TasksActivity extends AppCompatActivity {
 
     private void setTasksListView() {
 
-        db.collection(TASKS_COLLECTION_KEY)
-                .whereEqualTo(PROJECT_KEY, projectExtra.getId())
+        db.collection(PROJECTS_COLLECTION_KEY).document(projectExtra.getId()).collection(TASKS_COLLECTION_KEY)
                 .orderBy(COMPLETED_KEY)
                 .orderBy(TO_DATE_KEY)
                 .orderBy(DESCRIPTION_KEY)
